@@ -84,6 +84,10 @@ func getFncPtr(module *goloader.CodeModule, fncName string) (unsafe.Pointer, err
 }
 
 func main() {
+	if len(os.Args) < 2 {
+		panic(errors.New("no path to the objects dir was provided"))
+	}
+
 	implementationWrapper, err := NewImplementationWrapper(os.Args[1])
 	if err != nil {
 		panic(err)
