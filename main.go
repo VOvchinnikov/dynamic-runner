@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/pkujhd/goloader"
+	"github.com/remerge/goloader"
 	"os"
 	"path/filepath"
 	"unsafe"
