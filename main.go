@@ -8,12 +8,41 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"runtime/debug"
 	"strings"
 	"unsafe"
 
 	"github.com/pkujhd/goloader"
 )
+
+func main() {
+	// this is here to link the runtime, without which everything will fail to link
+	_ = runtime.Version()
+
+	if len(os.Args) < 2 {
+		fmt.Println(errors.New("no path to the objects dir was provided"))
+		return
+	}
+
+	implementationWrapper, err := NewImplementationWrapper(os.Args[1])
+	if err != nil {
+		fmt.Printf("failed to load implementation: %s\n", err)
+		return
+	}
+
+	stuff := "default test stuff"
+	if len(os.Args) > 2 {
+		stuff = os.Args[2]
+	}
+
+	processedStuff, err := implementationWrapper.ProcessStuff(stuff)
+	if err != nil {
+		fmt.Printf("failed to process stuff: %s\n", err)
+	}
+
+	fmt.Println(processedStuff)
+}
 
 type Interface interface {
 	ProcessStuff(string) (string, error)
@@ -268,27 +297,4 @@ func validateDependencies(buildInfo, needed *debug.BuildInfo) error {
 		}
 	}
 	return nil
-}
-
-func main() {
-	if len(os.Args) < 2 {
-		panic(errors.New("no path to the objects dir was provided"))
-	}
-
-	implementationWrapper, err := NewImplementationWrapper(os.Args[1])
-	if err != nil {
-		panic(err)
-	}
-
-	stuff := "default test stuff"
-	if len(os.Args) > 2 {
-		stuff = os.Args[2]
-	}
-
-	processedStuff, err := implementationWrapper.ProcessStuff(stuff)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(processedStuff)
 }
